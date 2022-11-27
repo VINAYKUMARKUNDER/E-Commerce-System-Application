@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.shopping.Exception.LogInException;
 import com.shopping.Repository.AdminRepository;
-import com.shopping.Repository.CurrentSessionDao;
+import com.shopping.Repository.CurrentUserSessionRepository;
 import com.shopping.Repository.UserRepository;
 import com.shopping.model.Admin;
 import com.shopping.model.CurrentUserSession;
@@ -20,7 +20,7 @@ import com.shopping.model.User;
 import net.bytebuddy.utility.RandomString;
 
 @Service
-public class LogInServiceImpl implements LogInService{
+public class CurrentUserSessionServiceImpl implements CurrentUserSessionService{
 
 	@Autowired
 	private UserRepository userRepository;
@@ -29,7 +29,7 @@ public class LogInServiceImpl implements LogInService{
 	private AdminRepository adminRepository;
 	
 	@Autowired
-	private CurrentSessionDao sDao;
+	private CurrentUserSessionRepository sDao;
 	
 	
 
@@ -48,7 +48,7 @@ public class LogInServiceImpl implements LogInService{
 		}
 		
 		if(existingUser.getPassword().equals(logdto.getPassword())) {
-			String key= RandomString.make(8);
+			String key= RandomString.make(4);
 			CurrentUserSession currentUserSession = new CurrentUserSession(existingUser.getUserId(),key,LocalDateTime.now());
 			sDao.save(currentUserSession);
 			return currentUserSession.toString();
@@ -80,46 +80,6 @@ public class LogInServiceImpl implements LogInService{
 	
 	
 	
-	@Override
-	public String AdminlogInService(Login logdto) throws LogInException {
-		List<Admin>  admin= adminRepository.findByAdminEmail(logdto.getEmail());
-		Admin existingAdmin = admin.get(0);
-		if(existingAdmin == null) {
-			throw new LogInException("Wrong input!! Please Enter a valid mobile number...");
-		}
-		
-		Optional<CurrentUserSession> validUserSessionOpt =  sDao.findByUserId(existingAdmin.getAdminId());
-		
-		if(validUserSessionOpt.isPresent()) {	
-			throw new LogInException("Already Logged In...");
-		}
-		
-		if(existingAdmin.getPassword().equals(logdto.getPassword())) {
-			String key= RandomString.make(6);
-			CurrentUserSession currentUserSession = new CurrentUserSession(existingAdmin.getAdminId(),key,LocalDateTime.now());
-			sDao.save(currentUserSession);
-			return currentUserSession.toString();
-		}
-		else
-			throw new LogInException("Please Enter a valid password");
-	}
 	
-	
-	
-
-	@Override
-	public String AdminlogOutService(String key) throws LogInException {
-
-		CurrentUserSession validCustomerSession = sDao.findByUuid(key);
-		if(validCustomerSession == null) {
-			throw new LogInException("Wrong Unique User Id !! Try again..");
-			
-		}
-		
-		sDao.delete(validCustomerSession);
-		
-		return "You are Logged Out !";
-	}
-
 
 }

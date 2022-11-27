@@ -18,5 +18,7 @@ public class OrderList {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	private Product product;
+	
+	
 
 }

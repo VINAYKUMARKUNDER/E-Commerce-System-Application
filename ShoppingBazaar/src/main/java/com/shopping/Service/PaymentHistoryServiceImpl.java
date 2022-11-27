@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.shopping.Exception.CustomerException;
 import com.shopping.Exception.PaymentHistoryException;
-import com.shopping.Repository.CurrentSessionDao;
+import com.shopping.Repository.CurrentUserSessionRepository;
 import com.shopping.Repository.PaymentHistoryRepository;
 import com.shopping.model.CurrentUserSession;
 import com.shopping.model.PaymentHistory;
@@ -21,7 +21,7 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService{
 	private PaymentHistoryRepository paymentHistoryRepository;
 	
 	@Autowired
-	private CurrentSessionDao currentSessionDao;
+	private CurrentUserSessionRepository currentSessionDao;
 
 	
 	

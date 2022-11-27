@@ -1,5 +1,7 @@
 package com.shopping.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,12 +10,16 @@ import org.springframework.stereotype.Service;
 
 import com.shopping.Exception.CartException;
 import com.shopping.Exception.CustomerException;
+import com.shopping.Exception.OrderListException;
 import com.shopping.Exception.ProductException;
 import com.shopping.Repository.CartRepository;
-import com.shopping.Repository.CurrentSessionDao;
+import com.shopping.Repository.CurrentUserSessionRepository;
+import com.shopping.Repository.OrderListRepository;
+import com.shopping.Repository.PaymentHistoryRepository;
 import com.shopping.Repository.ProductRepository;
 import com.shopping.model.Cart;
 import com.shopping.model.CurrentUserSession;
+import com.shopping.model.PaymentHistory;
 import com.shopping.model.Product;
 
 @Service
@@ -26,12 +32,18 @@ public class CartServiceImpl implements CartService{
 	private ProductRepository productRepository;
 	
 	@Autowired
-	private CurrentSessionDao currentSessionDao;
+	private OrderListRepository orderListService;
+	
+	@Autowired
+	private PaymentHistoryRepository paymentHistoryRepository;
+	
+	@Autowired
+	private CurrentUserSessionRepository currentUserSessionRepository;
 
 	@Override
 	public Product AddProductCart(String key,Integer productId) throws ProductException,CustomerException {
 		
-		CurrentUserSession currUser=currentSessionDao.findByUuid(key);
+		CurrentUserSession currUser=currentUserSessionRepository.findByUuid(key);
 		if(currUser==null) throw new CustomerException("Please Login first");
 		
 		
@@ -50,7 +62,7 @@ public class CartServiceImpl implements CartService{
 	@Override
 	public Integer totalAmount(String key) throws CartException,CustomerException {
 		
-		CurrentUserSession currUser=currentSessionDao.findByUuid(key);
+		CurrentUserSession currUser=currentUserSessionRepository.findByUuid(key);
 		if(currUser==null) throw new CustomerException("Please Login first");
 		
 		
@@ -66,7 +78,7 @@ public class CartServiceImpl implements CartService{
 
 	@Override
 	public Product deleteProductToCart(String key,Integer productId) throws CartException,CustomerException {
-		CurrentUserSession currUser=currentSessionDao.findByUuid(key);
+		CurrentUserSession currUser=currentUserSessionRepository.findByUuid(key);
 		if(currUser==null) throw new CustomerException("Please Login first");
 		
 		
@@ -80,7 +92,7 @@ public class CartServiceImpl implements CartService{
 
 	@Override
 	public Product increaseProductQuantity(String key,Integer productId, Integer increaseValue) throws CartException,CustomerException {
-		CurrentUserSession currUser=currentSessionDao.findByUuid(key);
+		CurrentUserSession currUser=currentUserSessionRepository.findByUuid(key);
 		if(currUser==null) throw new CustomerException("Please Login first");
 		
 		Optional<Cart> car=	cartRepository.findById(productId);
@@ -88,11 +100,49 @@ public class CartServiceImpl implements CartService{
 		
 		for(int i=0;i<increaseValue;i++) {
 		Cart cart = new Cart();
-		cart.setCartId(car.get().getProduct().getProductId());
+		cart.setCartId(car.get().getProduct().getProductId()+i);
 		cart.setProduct(car.get().getProduct());
 		cartRepository.save(cart);
 		}
 		return car.get().getProduct();
+	}
+
+
+
+	@Override
+	public List<Product> buyNow(String key) throws CustomerException, CartException, ProductException, OrderListException {
+		CurrentUserSession currUser=currentUserSessionRepository.findByUuid(key);
+		if(currUser==null) throw new CustomerException("Please Login first");
+		
+		List<Cart> listOfCarts = cartRepository.findAll();
+		if(listOfCarts.size()==0)throw new CartException("Cart is Empty.");
+		List<Product> products = new ArrayList<>();
+		
+		for(Cart cart:listOfCarts) {
+			PaymentHistory payment = new PaymentHistory();
+			payment.setBalence(cart.getProduct().getPrice());
+			payment.setDate(LocalDate.now());
+			payment.setPaymentType(cart.getProduct().getProductType());
+			payment.setDiscription("Payment added Successfully..");
+			
+			paymentHistoryRepository.save(payment);
+			cartRepository.deleteAll();
+			products.add(cart.getProduct());
+		}
+//		cartRepository.deleteAll();
+		
+		return products;
+	}
+
+
+
+	@Override
+	public List<Cart> allProduct(String key) throws CartException, CustomerException {
+		CurrentUserSession currUser=currentUserSessionRepository.findByUuid(key);
+		if(currUser==null) throw new CustomerException("Please Login first");
+		
+		List<Cart> listOfProducts = cartRepository.findAll();
+		return listOfProducts; 
 	}
 	
 

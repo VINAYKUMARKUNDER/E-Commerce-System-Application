@@ -10,7 +10,7 @@ import com.shopping.model.CurrentUserSession;
 
 
 @Repository
-public interface CurrentSessionDao extends JpaRepository<CurrentUserSession, Integer>{
+public interface CurrentUserSessionRepository extends JpaRepository<CurrentUserSession, Integer>{
 
 	public CurrentUserSession findByUuid(String uuid);
 
