@@ -1,5 +1,7 @@
 package com.shopping.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.shopping.Exception.CartException;
 import com.shopping.Exception.CustomerException;
+import com.shopping.Exception.OrderListException;
 import com.shopping.Exception.ProductException;
 import com.shopping.Service.CartService;
+import com.shopping.Service.OrderListService;
+import com.shopping.model.Cart;
 import com.shopping.model.Product;
 
 @RestController
@@ -24,6 +29,9 @@ public class CartController {
 
 	@Autowired
 	private CartService cartService;
+	
+	@Autowired
+	private OrderListService orderListService;
 	
 	@PostMapping("/productAddInCart")
 	public ResponseEntity<Product>  addProductToCart(@RequestParam("Key") String key, @RequestParam("productId") Integer productId) throws ProductException, CustomerException{
@@ -53,4 +61,17 @@ public class CartController {
 		return new ResponseEntity<Integer>(total,HttpStatus.ACCEPTED);
 	}
 	
+	@PostMapping("/buyNow")
+	public ResponseEntity<String> buyNow(@RequestParam String key) throws CustomerException, CartException, ProductException, OrderListException{
+		List<Product> prodoct= cartService.buyNow(key);
+		orderListService.addCartToOrderList(prodoct);
+		return new ResponseEntity<String>("Prdouct Buy Successfullyy." , HttpStatus.ACCEPTED);
+	}
+	
+	
+	@GetMapping("/allProduct")
+	public ResponseEntity<List<Cart>> listOfCart(@RequestParam String key) throws CartException, CustomerException{
+		List<Cart> listOfCarts = cartService.allProduct(key);
+		return new ResponseEntity<List<Cart>>(listOfCarts,HttpStatus.ACCEPTED);
+	}
 }
