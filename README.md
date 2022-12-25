@@ -45,23 +45,13 @@
 The following Diagram depicts the flow of our Entity Relation Diagram to simplify the work flow.
 <br>
 <br>
-  <img src="https://i.ibb.co/6XVkNh0/EZWallet-ER.png" alt="EZWallet-ER" border="0"  width="100%" height="400">
+  <img src="https://www.linkpicture.com/q/Sopping_Bazzar.png" alt="EZWallet-ER" border="0"  width="100%" height="400">
 
 <br>
 <br>
 <hr>
 
-# Services Table
-<hr>
-The following Diagram depicts the services of our EZWallet modules
-<br>
-<br>
-  
-  
-<img src="https://i.ibb.co/K9XNjLb/2.jpg"  width="100%" height="400">
-<br>
-<br>
-<hr>
+
   
 
 
@@ -129,6 +119,6 @@ http://localhost:8888/swagger-ui/#
 
 
 
-<img src="https://i.ibb.co/PMq2JQK/Screenshot-452.png" alt="Screenshot-452" border="0">
-<img src="https://i.ibb.co/PQmb4cS/Screenshot-453.png" alt="Screenshot-453" border="0">
-<img src="https://i.ibb.co/PM03DWq/Screenshot-454.png" alt="Screenshot-454" border="0">
+<img src="https://www.linkpicture.com/q/Login-Controller.png" alt="Screenshot-452" border="0">
+<img src="https://www.linkpicture.com/q/basic-Error2.png" alt="Screenshot-453" border="0">
+<img src="https://www.linkpicture.com/q/payment_2.png" alt="Screenshot-454" border="0">
